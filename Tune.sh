@@ -26,8 +26,8 @@ while true; do
         case $opt in
             "Deluge Tuning")
                 need_input; read -p "Enter username of your Deluge: " username
-                read -p "Cache Size (unit:MiB): " cache;
-                Cache_de=$(expr $cache \* 64)
+                read -p "Cache Size (unit:GiB): " cache;
+                Cache1=$(expr $cache \* 65536)
                 Deluge_libtorrent; break
                 ;;
             "Tweaked BBR Install")
@@ -39,22 +39,8 @@ while true; do
                 CPU_Tweaking; NIC_Tweaking; Network_Other_Tweaking; Scheduler_Tweaking; kernel_Tweaking; break
                 ;;
             "Configure Boot Script")
-                normal_1; echo "Start Configuing Boot Script"
-                wget https://raw.githubusercontent.com/jerry048/Seedbox-Components/main/Miscellaneous/.boot-script.sh && chmod +x .boot-script.sh
-                cat << EOF > /etc/systemd/system/boot-script.service
-[Unit]
-Description=boot-script
-After=network.target
-
-[Service]
-Type=simple
-ExecStart=/root/.boot-script.sh
-RemainAfterExit=true
-
-[Install]
-WantedBy=multi-user.target
-EOF
-                systemctl enable boot-script.service; break
+                source <(wget -qO- https://raw.githubusercontent.com/jerry048/Seedbox-Components/main/Miscellaneous/boot-script.sh)
+                boot_script; break
                 ;;
             *) warn_1; echo "Please choose a valid action";;
         esac
